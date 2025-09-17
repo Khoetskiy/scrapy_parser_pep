@@ -45,7 +45,7 @@ def test_run_scrapy(mock_dirs):
         'вывода в файл результатов.'
     )
     assert len(output_files) == 2, (
-        'Убедитесь, что создано два csv-файла с результами парсинга'
+        'Убедитесь, что создано два csv-файла с результатами парсинга'
     )
     assert any('pep_' in str(file) for file in output_files), (
         'Убедитесь, что список PEP сохраняется в файл с префиксом `pep_`'
