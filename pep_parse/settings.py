@@ -4,7 +4,6 @@ SPIDER_MODULES = ['pep_parse.spiders']
 NEWSPIDER_MODULE = 'pep_parse.spiders'
 
 
-# Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
 ITEM_PIPELINES = {
