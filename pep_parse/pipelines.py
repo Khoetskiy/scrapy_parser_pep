@@ -19,6 +19,9 @@ class PepParsePipeline:
     результаты в CSV-файл в директории results.
     """
 
+    def __init__(self) -> None:
+        RESULTS_DIR.mkdir(exist_ok=True)
+
     def open_spider(self, spider):
         """Инициализирует счетчик статусов при старте паука."""
         self.status_counter = Counter()
@@ -39,7 +42,6 @@ class PepParsePipeline:
         - Второй столбец: Количество PEP в данном статусе
         - Последняя строка содержит общее количество PEP
         """
-        RESULTS_DIR.mkdir(exist_ok=True)
         now = datetime.now().strftime(DATETIME_FORMAT)
         filename = RESULTS_DIR / f'status_summary_{now}.csv'
 
@@ -47,7 +49,14 @@ class PepParsePipeline:
             fieldnames = [STATUS_FIELD, COUNT_FIELD]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
-            total_count = sum(self.status_counter.values())
-            for status, count in sorted(self.status_counter.items()):
-                writer.writerow({STATUS_FIELD: status, COUNT_FIELD: count})
-            writer.writerow({STATUS_FIELD: 'Total', COUNT_FIELD: total_count})
+            rows = [
+                {STATUS_FIELD: status, COUNT_FIELD: count}
+                for status, count in sorted(self.status_counter.items())
+            ]
+            rows.append(
+                {
+                    STATUS_FIELD: 'Total',
+                    COUNT_FIELD: sum(self.status_counter.values()),
+                }
+            )
+            writer.writerows(rows)
