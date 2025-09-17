@@ -12,22 +12,36 @@ from pep_parse.constants import (
 
 
 class PepParsePipeline:
+    """
+    Пайплайн для обработки и сохранения данных о статусах PEP.
+
+    Подсчитывает количество PEP в каждом статусе и сохраняет
+    результаты в CSV-файл в директории results.
+    """
+
     def __init__(self) -> None:
-        self.status_counter = Counter()
+        RESULTS_DIR.mkdir(exist_ok=True)
 
     def open_spider(self, spider):
-        """Метод вызывается при старте паука. Сейчас не используется."""
+        """Инициализирует счетчик статусов при старте паука."""
+        self.status_counter = Counter()
 
     def process_item(self, item, spider):
-        """Увеличивает счётчик для статуса PEP."""
+        """Обрабатывает каждый PEP и подсчитывает статусы."""
         status = item['status']
         if status:
             self.status_counter[status] += 1
         return item
 
     def close_spider(self, spider):
-        """Создает csv файл с данными о количестве статусов."""
-        RESULTS_DIR.mkdir(exist_ok=True)
+        """
+        Сохраняет статистику по статусам PEP в CSV-файл.
+
+        Создает CSV-файл в формате:
+        - Первый столбец: Статус PEP
+        - Второй столбец: Количество PEP в данном статусе
+        - Последняя строка содержит общее количество PEP
+        """
         now = datetime.now().strftime(DATETIME_FORMAT)
         filename = RESULTS_DIR / f'status_summary_{now}.csv'
 
@@ -35,7 +49,14 @@ class PepParsePipeline:
             fieldnames = [STATUS_FIELD, COUNT_FIELD]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
-            total_count = sum(self.status_counter.values())
-            for status, count in sorted(self.status_counter.items()):
-                writer.writerow({STATUS_FIELD: status, COUNT_FIELD: count})
-            writer.writerow({STATUS_FIELD: 'Total', COUNT_FIELD: total_count})
+            rows = [
+                {STATUS_FIELD: status, COUNT_FIELD: count}
+                for status, count in sorted(self.status_counter.items())
+            ]
+            rows.append(
+                {
+                    STATUS_FIELD: 'Total',
+                    COUNT_FIELD: sum(self.status_counter.values()),
+                }
+            )
+            writer.writerows(rows)
