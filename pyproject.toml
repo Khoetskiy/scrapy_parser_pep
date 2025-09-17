@@ -4,12 +4,16 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "ipython>=8.18.1",
+    "ruff>=0.13.0",
+    "sqlalchemy>=2.0.43",
+]
 
 [tool.ruff]
-src = ["backend"]
+src = ["pep_parse"]
 line-length = 79
-target-version = "py312"
+target-version = "py39"
 
 exclude = [
     ".bzr",
@@ -40,7 +44,9 @@ exclude = [
     "venv",
     "migrations",
     "*/migrations/*",
-    "manage.py"
+    "manage.py",
+    "tests/",
+    "*/middlewares.py",
 ]
 
 [tool.ruff.lint]
@@ -120,6 +126,10 @@ ignore = [
     "BLE001", # Перехват "слепых" исключений
     "T201",   # Печать print
     "RUF002",  # Использование кириллицы
+    "RUF012",
+    "D101", # Пропущена docstring в публичном классе
+    "ARG002", # Неиспользуемый аргумент функции,
+    "DTZ005",  # Использование datetime.now() без указания часового пояса
 ]
 
 unfixable = [
@@ -128,7 +138,7 @@ unfixable = [
 ]
 
 [tool.ruff.lint.isort]
-known-local-folder = ["apps", "config"]
+known-local-folder = ["pep_parse"]
 lines-between-types = 0
 
 [tool.ruff.lint.flake8-quotes]
@@ -151,4 +161,3 @@ docstring-code-format = true
 skip-magic-trailing-comma = false
 
 [tool.ruff.lint.per-file-ignores]
-"*/settings/*.py" = ["F403"]
