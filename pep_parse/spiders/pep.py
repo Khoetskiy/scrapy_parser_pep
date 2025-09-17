@@ -32,7 +32,8 @@ class PepSpider(scrapy.Spider):
             return
 
         status = response.xpath(
-            '//dl/dt[contains(., "Status")]/following-sibling::dd[1]/abbr/text()'  # noqa: E501
+            '//dl/dt[contains(., "Status")]/'
+            'following-sibling::dd[1]/abbr/text()'
         ).get()
 
         yield PepParseItem(number=number, name=name, status=status)
