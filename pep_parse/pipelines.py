@@ -12,21 +12,33 @@ from pep_parse.constants import (
 
 
 class PepParsePipeline:
-    def __init__(self) -> None:
-        self.status_counter = Counter()
+    """
+    Пайплайн для обработки и сохранения данных о статусах PEP.
+
+    Подсчитывает количество PEP в каждом статусе и сохраняет
+    результаты в CSV-файл в директории results.
+    """
 
     def open_spider(self, spider):
-        """Метод вызывается при старте паука. Сейчас не используется."""
+        """Инициализирует счетчик статусов при старте паука."""
+        self.status_counter = Counter()
 
     def process_item(self, item, spider):
-        """Увеличивает счётчик для статуса PEP."""
+        """Обрабатывает каждый PEP и подсчитывает статусы."""
         status = item['status']
         if status:
             self.status_counter[status] += 1
         return item
 
     def close_spider(self, spider):
-        """Создает csv файл с данными о количестве статусов."""
+        """
+        Сохраняет статистику по статусам PEP в CSV-файл.
+
+        Создает CSV-файл в формате:
+        - Первый столбец: Статус PEP
+        - Второй столбец: Количество PEP в данном статусе
+        - Последняя строка содержит общее количество PEP
+        """
         RESULTS_DIR.mkdir(exist_ok=True)
         now = datetime.now().strftime(DATETIME_FORMAT)
         filename = RESULTS_DIR / f'status_summary_{now}.csv'
